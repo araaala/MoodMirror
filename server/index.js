@@ -145,9 +145,19 @@ app.get("/auth/login", (req, res) => {
     return res.redirect(`${CLIENT_URL}/home`);
   }
 
-  const url = spotifyApi.createAuthorizeURL(SPOTIFY_SCOPES, "moodmirror_state");
+  const scope = encodeURIComponent(SPOTIFY_SCOPES.join(" ")); // <-- key fix
+
+  const url =
+    "https://accounts.spotify.com/authorize" +
+    "?response_type=code" +
+    `&client_id=${process.env.SPOTIFY_CLIENT_ID}` +
+    `&redirect_uri=${encodeURIComponent(process.env.SPOTIFY_REDIRECT_URI)}` +
+    `&scope=${scope}` +
+    "&state=moodmirror_state";
+
   return res.redirect(url);
 });
+
 
 // Spotify callback (REAL)
 app.get("/auth/callback", async (req, res) => {
